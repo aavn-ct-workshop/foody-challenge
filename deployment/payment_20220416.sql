@@ -1,0 +1,1 @@
+INSERT INTO public.payment (id, amount, detail, user_id) VALUES(1, 10000000, '', 'ab893719-f74c-4ab0-b5b3-096ba5102aa5');

@@ -1,0 +1,3 @@
+INSERT INTO public.merchant (id,created_at,image_url,name) VALUES
+	 ('bead1794-462e-4a28-9109-0b4929c1bd39','2022-04-14 03:46:52.313','https://cafefcdn.com/thumb_w/650/2020/photo1578620456738-1578620457067-crop-1578620764678208926747.jpg','Phuc Long'),
+	 ('153b9a01-1bd8-49b3-9a75-0ba134a7f0b1','2022-04-14 03:47:03.886','https://cdn.trungnguyenlegend.com/wp-content/uploads/2018/03/new-logo.png','Trung Nguyen Legends');

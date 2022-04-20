@@ -1,0 +1,16 @@
+package com.aa.workshop.kafka.payment.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class FoodyWallet {
+    String uuid;
+    String userId;
+    long orderTime;
+    long proceedTime;
+    boolean hasPaid;
+}

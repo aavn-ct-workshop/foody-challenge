@@ -1,0 +1,161 @@
+version: '3.3'
+services:
+    frontend:
+        container_name: frontend
+        build:
+            context: ../foody-frontend
+        image: frontend:latest
+        ports:
+            - 8088:8080
+        networks:
+            - spring-cloud-network
+
+    driver-service:
+        container_name: driver-service
+        build:
+            context: ../kafka-driver
+        image: driver:latest
+        ports:
+            - 8081:8080
+        depends_on:
+            - kafka
+        environment:
+            - "SPRING_PROFILES_ACTIVE=prod"
+        networks:
+            - spring-cloud-network
+        volumes:
+            - maven-repo:/root/.m2
+
+    notifier-service:
+        container_name: notifier-service
+        build:
+            context: ../kafka-notifier
+        image: notifier-service:latest
+        ports:
+            - 8082:8080
+        depends_on:
+            - kafka
+        environment:
+            - "SPRING_PROFILES_ACTIVE=prod"
+        networks:
+            - spring-cloud-network
+        volumes:
+            - maven-repo:/root/.m2
+
+    merchant-service:
+        container_name: merchant-service
+        build:
+            context: ../foody-merchant-service
+        image: merchant-service:latest
+        ports:
+            - 8083:8080
+        depends_on:
+            - kafka
+        environment:
+            - "SPRING_PROFILES_ACTIVE=prod"
+        networks:
+            - spring-cloud-network
+        volumes:
+            - maven-repo:/root/.m2
+
+    order-service:
+        container_name: order-service
+        build:
+            context: ../foody-order-service
+        image: order-service:latest
+        ports:
+            - 8084:8080
+        depends_on:
+            - kafka
+            - payment-service
+            - driver-service
+        environment:
+            - "SPRING_PROFILES_ACTIVE=prod"
+        networks:
+            - spring-cloud-network
+        volumes:
+            - maven-repo:/root/.m2
+
+    payment-service:
+        container_name: payment-service
+        build:
+            context: ../foody-payment
+        image: payment-service:latest
+        ports:
+            - 8085:8080
+        depends_on:
+            - kafka
+        environment:
+            - "SPRING_PROFILES_ACTIVE=prod"
+        networks:
+            - spring-cloud-network
+        volumes:
+            - maven-repo:/root/.m2
+
+    zookeeper:
+        container_name: zookeeper
+        image: confluentinc/cp-zookeeper:latest
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        ports:
+            - 22181:2181
+        networks:
+            - spring-cloud-network
+  
+    kafka:
+        container_name: kafka
+        image: confluentinc/cp-kafka:latest
+        hostname: kafka
+        depends_on:
+            - zookeeper
+        ports:
+            - 9092:9092
+            - 29092:29092
+        environment:
+            - "KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true"
+            - "KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181"
+            - "KAFKA_BROKER_ID=1"
+            - "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092"
+            - "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+            - "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT"
+            - "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1"
+        networks:
+            - spring-cloud-network
+
+    postgres:
+        image: postgres:14.1-alpine
+        container_name: postgres
+        restart: always
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+        ports:
+          - '30003:5432'
+        volumes: 
+          - ./init-db:/docker-entrypoint-initdb.d/
+        networks:
+            - spring-cloud-network
+            
+    nginx:
+        image: nginx:1.21.6-alpine
+        container_name: nginx
+        restart: always
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        ports:
+            - 80:80
+        depends_on:
+            - frontend
+        networks:
+            - spring-cloud-network
+            
+networks:
+    spring-cloud-network:
+        driver: bridge
+
+volumes:
+    db:
+        driver: local
+    maven-repo:
+        driver: local

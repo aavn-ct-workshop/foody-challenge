@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  selector:
+    matchLabels:
+      app: app-fooday
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: app-fooday
+    spec:
+      containers:
+        - image: foody:latest
+          imagePullPolicy: Never
+          name: fooday
+          ports:
+            - containerPort: 80
