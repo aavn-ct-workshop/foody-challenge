@@ -2,9 +2,7 @@ version: '3.3'
 services:
     frontend:
         container_name: frontend
-        build:
-            context: ../foody-frontend
-        image: frontend:latest
+        image: nqkhai30/frontend:latest
         ports:
             - 8088:8080
         networks:
@@ -12,9 +10,7 @@ services:
 
     driver-service:
         container_name: driver-service
-        build:
-            context: ../kafka-driver
-        image: driver:latest
+        image: nqkhai30/driver:latest
         ports:
             - 8081:8080
         depends_on:
@@ -28,9 +24,7 @@ services:
 
     notifier-service:
         container_name: notifier-service
-        build:
-            context: ../kafka-notifier
-        image: notifier-service:latest
+        image: nqkhai30/notifier-service:latest
         ports:
             - 8082:8080
         depends_on:
@@ -44,9 +38,7 @@ services:
 
     merchant-service:
         container_name: merchant-service
-        build:
-            context: ../foody-merchant-service
-        image: merchant-service:latest
+        image: nqkhai30/merchant-service:latest
         ports:
             - 8083:8080
         depends_on:
@@ -60,9 +52,7 @@ services:
 
     order-service:
         container_name: order-service
-        build:
-            context: ../foody-order-service
-        image: order-service:latest
+        image: nqkhai30/order-service:latest
         ports:
             - 8084:8080
         depends_on:

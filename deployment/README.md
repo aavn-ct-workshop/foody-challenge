@@ -7,5 +7,5 @@ docker-compose build
 
 ## To start application
 ```
-docker-compose up
+docker-compose up -d
 ```
